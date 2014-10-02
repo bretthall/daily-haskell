@@ -1,6 +1,7 @@
 module Main where
 
 import Data.List
+import System.Environment (getArgs)
 
 {--
 
@@ -40,4 +41,6 @@ summer base sequence = product [1 .. base] == sum sequence
 
 -- for this problem the (uninforced) range of base is in [3 .. 7]
 
-    
+main = do
+  args <- getArgs
+  putStrLn $ (args !! 0) ++ "! = " ++ (intercalate " + " $ map show (distinctFactorsSum ((read (args !! 0))::Int)))
