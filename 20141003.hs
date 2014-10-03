@@ -3,6 +3,8 @@ import qualified Data.Set as Set
 import Control.Monad (liftM)
 import qualified Data.ByteString.Char8 as B
 import Data.Int
+import System.Environment (getArgs)
+
 {--
 
 Word ladders (originally called 'Doublets') by Lewis Carroll
@@ -79,21 +81,24 @@ fixedWords ps words = foldl f words ps
 
 fixedLetters freePos word = [(i, B.index word i) | i <- [0..((B.length word) - 1)], i /= freePos]
 
-ladderStep :: [B.ByteString] -> Int -> B.ByteString -> [[B.ByteString]]
-ladderStep words stepNum current | (stepNum < 0) = [[]]
-                                 | otherwise = map (current:) $ concatMap step [0..lastPos]
+wordsForNextStep current words = concatMap findWords [0..((B.length current) - 1)]
     where
-      lastPos = (B.length current) - 1
-      step pos = concatMap (ladderStep words (stepNum - 1)) $ fixedWords (fixedLetters pos current) words
+      findWords i = fixedWords (fixedLetters i current) words
+
+ladderStep :: [B.ByteString] -> Int -> B.ByteString -> [[B.ByteString]]
+ladderStep words stepNum current | (stepNum == 0) = [current:[]]
+                                 | otherwise = map (current:) $ concatMap (ladderStep words (stepNum - 1)) nextWords
+    where
+      nextWords = wordsForNextStep current words
 
 wordLadderBS :: B.ByteString -> B.ByteString -> Int -> [B.ByteString] -> [[B.ByteString]]
-wordLadderBS source target interimSteps words = filter hitTarget $ ladderStep words interimSteps source
+wordLadderBS source target interimSteps words = filter hitTarget $ ladderStep words (interimSteps + 1) source
     where 
       hitTarget as = (as !! targetIndex) == target
-      targetIndex = interimSteps - 1
+      targetIndex = interimSteps + 1
 
 
--- NOt geting the right answer yet (plus it takes a really long time to get the wrong answer)
+--gets the right answer, you just have to wait a long time
 wordLadder :: String -> String -> Int -> [B.ByteString] -> [[B.ByteString]]
 wordLadder source target interimSteps words = wordLadderBS (B.pack source) (B.pack target) interimSteps words
 
@@ -121,7 +126,12 @@ puzzle5 = Puz "mine" "coal" 5
 puzzle7 = Puz "raven" "miser" 3
 puzzle6 = Puz "flour" "bread" 5
 
+puzzels = [puzzle1, puzzle2, puzzle3, puzzle4, puzzle5, puzzle7, puzzle6]
+          
 solvePuzzel (Puz source target steps) = dict (length source) >>= (\ws -> return $ wordLadder source target steps ws)
 
---main = do
+main = do
+  args <- getArgs
+  sln <- solvePuzzel (puzzels !! (read (head args)::Int))
+  putStrLn $ show sln
   
