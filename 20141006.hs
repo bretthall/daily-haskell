@@ -36,7 +36,9 @@ How much did the father send his son, if each letter represents a digit?
 
 Write a haskell problem to solve this cryptarithmetic problem --}
 
-calcNum exps mults vs = foldl (\c (e, (m, x)) -> c + m*x*(10^e)) 0 $ zip exps $ zip mults vs
+import Data.List (foldl')
+
+calcNum exps mults vs = foldl' (\c (e, (m, x)) -> c + m*x*(10^e)) 0 $ zip exps $ zip mults vs
 calcSend = calcNum [3,2,1,0,0,0,0,0] [1,1,1,1,0,0,0,0]
 calcMore = calcNum [0,0,0,0,3,2,1,0] [0,1,0,0,1,1,1,0]
 calcMoney = calcNum [0,1,2,0,4,3,0,0] [0,1,1,0,1,1,0,1]
