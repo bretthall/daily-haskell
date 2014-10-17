@@ -45,6 +45,8 @@ combinations n as = combinations' (length as) n as
       combinations' l n v@(a:as) | l > n = (map (a:) (combinations' (l-1) (n-1) as)) ++ (combinations' (l-1) n as)
                                  | otherwise = [v]
 
+--Generates a list of all the list of numbers that can be made from the digits of the given number.
+--We only support 2 and 3 digit numbers since thise are the only ones of interest for the problem at hand.
 subNums :: Int -> [[Int]]
 subNums x | n == 3 = digits:(map (\(x,y)->[toInt x, toInt y]) $ map (splitAt 1) $ permutations s)
           | n == 2 = digits:[]
@@ -65,6 +67,10 @@ safePower x y | y < 0 = 0
 ops :: [Int -> Int -> Int]
 ops = [(+), (-), (*), safeDiv, safePower]
 
+-- Tests whether the given number is Friendman or not.
+-- We take all the possible numbers that can be generated from the given number's digits and do every combination
+-- of perumtations of those numbers with every operator from the ops list (for sets of three numbers we use pairs of the 
+-- operators). When we have three numbers we also do both possible associations of the operators.
 isFriedman :: Int -> Bool
 isFriedman num = not $ null $ filter id $ map subFN $ subNums num
     where 
@@ -73,5 +79,6 @@ isFriedman num = not $ null $ filter id $ map subFN $ subNums num
       eval2 op (x1:x2:[]) = (x1 `op` x2)
       eval3 (op1:op2:[]) (x1:x2:x3:[])  = ((x1 `op1` x2) `op2` x3):(x1 `op1` (x2 `op2` x3)):[] 
 
+--Generates the list of Friedman numbers.
 friedmanNums :: [Int]
 friedmanNums = map fst $ filter snd $ map (\x -> (x, isFriedman x)) nums
