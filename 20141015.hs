@@ -47,6 +47,7 @@ module Main where
 
 import Data.Array.Unboxed (UArray, (!), listArray)
 import Data.List (intercalate, permutations)
+import Combinations
 
 data Grid = Grid {numRows::Int, numCols::Int, els::UArray Int Int} deriving (Show)
 
@@ -81,13 +82,6 @@ printGrid grid = (intercalate "\n" $ map (printRow.(getRow grid)) [0..(numRows g
       printRow = (intercalate " ").(map formatNum)
       formatNum n | (length $ show n) == 1 = " " ++ (show n)
                   | otherwise = show n
-
-combinations :: Int -> [a] -> [[a]]
-combinations n as = combinations' (length as) n as
-    where 
-      combinations' _ 1 as = map (:[]) as
-      combinations' l n v@(a:as) | l > n = (map (a:) (combinations' (l-1) (n-1) as)) ++ (combinations' (l-1) n as)
-                                 | otherwise = [v]
 
 grids :: [Grid]
 grids = map makeGrid $ concatMap permutations $ combinations 12 ([1..15]::[Int])

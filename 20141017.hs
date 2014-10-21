@@ -34,16 +34,10 @@ http://lpaste.net/112709
 --}
 
 import Data.List (permutations)
+import Combinations
 
 nums :: [Int]
 nums = [10..365]
-
-combinations :: Int -> [a] -> [[a]]
-combinations n as = combinations' (length as) n as
-    where 
-      combinations' _ 1 as = map (:[]) as
-      combinations' l n v@(a:as) | l > n = (map (a:) (combinations' (l-1) (n-1) as)) ++ (combinations' (l-1) n as)
-                                 | otherwise = [v]
 
 --Generates a list of all the list of numbers that can be made from the digits of the given number.
 --We only support 2 and 3 digit numbers since thise are the only ones of interest for the problem at hand.
