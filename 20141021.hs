@@ -13,7 +13,7 @@ Easy enough to solve in your head, now, ... ;) put your head into Haskell code
 --}
 
 import Data.List (unfoldr)
-import Control.Applicative ((<*>), pure)
+import Rules
 
 type Number = (Int, Int, Int, Int)
 
@@ -22,7 +22,7 @@ fourDigitNumber :: [Number]
 -- the returned value is the list of all possible solutions of the
 -- first, second, third, and fourth digits
 
-fourDigitNumber = filter applyRules numbers
+fourDigitNumber = filter (satisfiesAll rules) numbers
 
 -- yeah, anamorphism for once
 numbers :: [Number]
@@ -47,10 +47,6 @@ rule5 (x1, x2, x3, x4) = x3 == (x1 - 2)
 
 rules :: [Rule]
 rules = [rule1, rule2, rule3, rule4, rule5]
-
---applicative, goody
-applyRules :: Number -> Bool
-applyRules = and.(rules <*>).pure
 
 increment :: Number -> Number
 increment number = inc 0 number
