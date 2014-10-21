@@ -53,7 +53,7 @@ subNums x | n == 3 = digits:(map (\(x,y)->[toInt x, toInt y]) $ map (splitAt 1) 
           | otherwise = undefined
     where 
       s = show x
-      digits = map read $ map (:"") s
+      digits = map (read.(:"")) s
       n = length s
       toInt x = (read x)::Int
 
