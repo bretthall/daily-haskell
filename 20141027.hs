@@ -109,9 +109,12 @@ possibleRows = (concatMap permutations).((flip combinations) digits)
 
 type Grid = [Row]
 
+addRows :: Grid -> [Row] -> [Grid]
+addRows g (r:rs) = if (colsGood (r:g)) then ((r:g) ++ addRows g rs) else (addRows g rs)
+addRows _ [] = []
+
 possibleGrids :: Int -> Int -> [Grid]
-possibleGrids rows cols = filter colsGood $ map (map (:) (possibleGrids (rows - 1) cols)) possibleRows
-possibleGrids 0 _ = []
+possibleGrids rows cols = 
 
 simpleDokuSolver :: Int -> Int -> IO ()
 simpleDokuSolver rows cols = undefined
