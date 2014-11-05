@@ -1,4 +1,5 @@
 {--
+@1HaskellADay http://lpaste.net/113798
 
 Number spiral diagonals, from Project Euler, Problem 28
 
