@@ -35,18 +35,13 @@ possiblities :: [Coins]
 possiblities = [[c1, c2, c5, c10, c100, c200] |
                 c1 <- [0..target],
                 c2 <- [0..(newTarget [c1] 2)],
-                c2 >= 0,
                 c5 <- [0..(newTarget [c1, c2] 5)],
-                c5 >= 0,
                 c10 <- [0..(newTarget [c1, c2, c5] 10)],
-                c10 >= 0,
                 c100 <- [0..(newTarget [c1, c2, c5, c10] 100)],
-                c100 >= 0,
                 c200 <- [0..(newTarget [c1, c2, c5, c10, c100] 200)],
-                c200 >= 0,
                 (total [c1, c2, c5, c10, c100, c200]) == target]
     where
-      newTarget coins coinValue = (target - (total coins)) `div` coinValue
+      newTarget coins coinValue = max 0 $ (target - (total coins)) `div` coinValue
 
 coinSumsFor2P :: Int
 coinSumsFor2P = length possiblities
