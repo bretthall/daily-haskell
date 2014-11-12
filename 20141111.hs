@@ -1,4 +1,5 @@
 {--
+Solution to 1HaskellADay http://lpaste.net/114089
 
 Coin sums
 Project Euler, Problem 31
@@ -39,7 +40,7 @@ possiblities = [[c1, c2, c5, c10, c100, c200] |
                 c10 <- [0..(newTarget [c1, c2, c5] 10)],
                 c100 <- [0..(newTarget [c1, c2, c5, c10] 100)],
                 c200 <- [0..(newTarget [c1, c2, c5, c10, c100] 200)],
-                (total [c1, c2, c5, c10, c100, c200]) == target]
+                hitsTarget [c1, c2, c5, c10, c100, c200]]
     where
       newTarget coins coinValue = max 0 $ (target - (total coins)) `div` coinValue
 
