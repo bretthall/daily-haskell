@@ -63,4 +63,4 @@ formatMatches ps = "\n" ++ (concatMap formatMatch ps)
 formatMatch :: (Peep, Peep) -> String
 formatMatch (g, r) = (show g) ++ " -> " ++ (show r) ++ "\n"
 
-printMatches = getMatches >>= (\x -> return $ format x) >>= putStrLn
+printMatches = getMatches >>= return.format >>= putStrLn
