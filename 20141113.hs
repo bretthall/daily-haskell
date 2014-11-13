@@ -1,5 +1,7 @@
 {--
 
+Solution to @1HaskellADay http://lpaste.net/114233
+
 We're all truth-seekers here, right?
 
 We're all refined people of exactitude, so, like, in cnn.com, when a scientist
@@ -38,7 +40,7 @@ possibleScores :: [[Int]]
 possibleScores = [[97, 91, x, y] | x <- [0..100], y <- [0..100]]
 
 avg :: [Int] -> Rational
-avg = (/ fromIntegral 4).fromIntegral.sum
+avg = (/ 4).fromIntegral.sum
 
 okScores :: [[Int]] -> [[Int]]
 okScores = filter ((==95).round.avg)
