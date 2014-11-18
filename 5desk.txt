@@ -17390,6 +17390,7 @@ endothermic
 endow
 endower
 endowment
+ends
 endue
 endurable
 endurance
