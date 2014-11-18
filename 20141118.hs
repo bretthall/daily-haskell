@@ -86,8 +86,10 @@ squareOK = (all (`elem` allowedWords)).toWords
 -- Don't have time to generalize this right now, but to do it we would need to first remove all the 
 -- letters from the given first row from the pool and then analyze whats left. Any single letters go
 -- in the diagonal pool and any double letters go in the nondiagonal pool (once for each pair in the 
--- original pool). Then just proceed as above and hope that 5desk doesn't require any more additions
--- to solve the puzzle.
+-- original pool). Note that if we don't have enough letters in the diagonal pool to fill the diagonal 
+-- then we must have space on the diagonal for pairs of letters from the non-diagonal pool. Modifcations 
+-- woudl need to be made above to take this into account. Then just proceed as above and hope that 5desk 
+-- doesn't require any more additions to solve the puzzle.
 wordSquare :: String -> Square -> [Square]
 wordSquare pool structure = undefined
 
