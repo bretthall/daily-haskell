@@ -1,5 +1,7 @@
 module Rules where
 
+-- http://lpaste.net/114590
+
 import Control.Applicative
 import Data.Foldable
 import Prelude hiding (and)
