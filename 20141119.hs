@@ -14,6 +14,8 @@ Sally had red hair. John did not have any training in physics. Who was first?
 
 import Data.List (zipWith4, permutations, find, sortBy)
 import Data.Maybe (fromJust)
+import Data.Function (on)
+import Control.Arrow ((&&&))
 import Rules
 
 data Person = John | William | Sally
@@ -67,16 +69,16 @@ johnNotPhysicist :: Rule
 johnNotPhysicist [j, _, _] = training j /= Physicist
 
 findPlace :: Place -> Result -> PersonInfo
-findPlace p = fromJust.(find ((== p).place))
+findPlace p = fromJust.find ((== p).place)
 
 physicistWins :: Rule
-physicistWins = (== Physicist).training.(findPlace First)
+physicistWins = (== Physicist).training.findPlace First
 
 mathemeticianSecond :: Rule
-mathemeticianSecond = (== Mathematician).training.(findPlace Second)
+mathemeticianSecond = (== Mathematician).training.findPlace Second
 
 blackHairLast :: Rule
-blackHairLast = (== Black).hair.(findPlace Last)
+blackHairLast = (== Black).hair.findPlace Last
 
 rules :: [Rule]
 rules = [hairIsCorrect, johnNotPhysicist, physicistWins, mathemeticianSecond, blackHairLast]
@@ -95,7 +97,7 @@ okResults = filter (satisfiesAll rules) possiblities
 -- => All rules satisfied
 
 scienceContest :: [(Person, Place)]
-scienceContest = sortBy (\x y -> compare (snd x) (snd y)) $ map (\p -> (person p, place p)) $ head okResults
+scienceContest = sortBy (compare `on` snd) $ map (person &&& place) $ head okResults
 
 -- *Main> scienceContest
 -- [(Sally,First),(John,Second),(William,Last)]
