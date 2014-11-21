@@ -32,9 +32,6 @@ poem = "My first is in ocean but not in sea\n\
        \My whole is praise for thoughts or men\n\
        \Or women, too, or tongue or pen."
 
-ordinals :: [(String, Int)]
-ordinals  = [("first", 1), ("second", 2), ("third", 3), ("fourth", 4), ("fifth", 5)]
-
 data Clue = Letter Int String | LastLetter String deriving (Show, Eq, Ord)
 
 clues :: [Clue]
@@ -67,3 +64,6 @@ da6ltrWord = filter (`elem` allowedWords) possibleWords
 -- ["clever"]
 
 -- And clever satisfies the final clue as it "praises" all that stuff
+
+--It would be interesting to write a Parsec parser that could parse the poem to build the clues,
+--but I'm out of time for today.
