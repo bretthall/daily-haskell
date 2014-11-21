@@ -13,6 +13,8 @@ Can you?
 
 --}
 
+-- We coudl just do the algebra but I did too much of that back in school. Instead lets brute-force it for kicks.
+
 type Count = Int
 
 type Cents = Int
@@ -39,11 +41,7 @@ toCents = floor.(* 100.0)
 sacksSold :: Money -> Count -> [Total]
 sacksSold moonay totalSacksSold = filter ((== toCents moonay).totalMoney) $ possible totalSacksSold
 
--- *Main> sacksSold 62.85 385
--- []
-
--- Hmmm, I'm missing something here. Alegbra says that we need to sell 
--- (6285.0 - 10.0*385)/(25.0 - 10.0) = 162.33333333333334 large sacks
--- so there doesn't appear to be a solution with integral values
+-- *Main> sacksSold 62.65 385
+-- [Total {large = 161, small = 224, totalCount = 385, totalMoney = 6265}]
 
 -- Eh! You get it! Do something 'nice' to find a solution to the above problem
