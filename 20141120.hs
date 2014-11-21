@@ -1,5 +1,7 @@
 {--
 
+solution to @1HaskellADay http://lpaste.net/114620
+
 From Mensa Genius Quiz-a-Day book, for October 20th
 
 People have already started buying Halloween candy, the better to eat before
