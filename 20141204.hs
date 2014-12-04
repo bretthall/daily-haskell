@@ -1,5 +1,7 @@
 {--
 
+Solution to @1HaskellADay http://lpaste.net/114435
+
 From Mensa's Genius Quiz-a-Day book, problem from November 17th
 
 Can you go from GLOW to WORM in only seven steps, changing one letter at a
@@ -32,9 +34,10 @@ module Main where
 
 import Data.Char
 import qualified Data.ByteString.Char8 as BS hiding (filter)
-import Data.Map.Strict hiding (map, filter)
-import Rules
+import Data.Map.Strict hiding (map, filter, null)
+import Rules -- http://lpaste.net/114590
 import Data.List (nub, sort)
+import Control.Monad.Par
 
 main = do
   ms <- createMaps
@@ -150,6 +153,11 @@ main = do
 -- ["GLOW","SLOW","SLOT","SOOT","TOOT","TORT","WORT","WORM"]
 -- ["GLOW","SLOW","SLOT","SPOT","SOOT","SORT","WORT","WORM"]
 -- ["GLOW","SLOW","SNOW","SNOT","SOOT","SORT","WORT","WORM"]
+-- => 105 Solutions!!
+
+-- paralleized using Control.Monad.Par 
+-- Speedup with -N4 over the non-parallel version is ~2.6
+-- not bad for the minimal amount of effort put into it
 
 start :: BS.ByteString
 start = BS.pack "GLOW"
@@ -162,7 +170,7 @@ numSteps = 7
 type WordSeq = [BS.ByteString]
 
 glowWorm :: CharMaps -> [WordSeq]
-glowWorm ms = nub $ sort $ filter ((== target).last) $ findWordSeqs ms 7 start
+glowWorm ms = nub $ sort $ runPar $ findWordSeqs ms target 7 start
 -- Need the nub.sort above because we can get repeats of words like BOOT where multiple predessors 
 -- can generate it by changing different letters (e.g. BLOT -> BOOT and BOLT -> BOOT)
 
@@ -180,7 +188,7 @@ createMaps = do
   return (onFstChar, onSndChar)
 
 lettersEqual :: BS.ByteString -> Int -> BS.ByteString -> Bool
-lettersEqual w i = (== BS.index w i).(flip BS.index i)
+lettersEqual w i = (== BS.index w i).(`BS.index` i)
 
 findWords :: CharMaps -> BS.ByteString -> Int -> [BS.ByteString]
 findWords (_, m2) w 0 = filter (satisfiesAll [lettersEqual w 3, lettersEqual w 2, not.lettersEqual w 0]) $ findWithDefault [] (BS.index w 1) m2
@@ -193,6 +201,12 @@ findAllSuccessors :: CharMaps -> BS.ByteString -> [BS.ByteString]
 findAllSuccessors ms w = concatMap (findWords ms w) [0..3]
 
 
-findWordSeqs :: CharMaps -> Int -> BS.ByteString -> [WordSeq]
-findWordSeqs _ 0 start = [[start]]
-findWordSeqs ms steps start = map (start:) $ concatMap (findWordSeqs ms (steps - 1)) $ findAllSuccessors ms start
+findWordSeqs :: CharMaps -> BS.ByteString -> Int -> BS.ByteString -> Par [WordSeq]
+findWordSeqs _ target 0 start | start == target = return [[start]]
+                              | otherwise = return []
+findWordSeqs ms target steps start = possible >>= resultFrom
+    where 
+      possible = possible' >>= return . filter (not.null) . concat
+      possible' = parMapM (findWordSeqs ms target (steps - 1)) $ findAllSuccessors ms start
+      resultFrom [] = return []
+      resultFrom ps = return $ map (start:) ps
