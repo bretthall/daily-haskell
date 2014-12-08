@@ -55,6 +55,9 @@ save it off as a file and count nucleotides that way. --}
 import Data.Vector.Unboxed as V
 import Data.Vector.Generic.Mutable as MV
 import Data.ByteString.Char8 as B
+import Data.Word
+import Data.Bits
+import Data.Map as M
 
 type As = Int
 type Cs = Int
@@ -67,6 +70,42 @@ aIndex = 0
 cIndex = 1
 gIndex = 2
 tIndex = 3
+
+word64Map :: M.Map Word64 Counts
+word64Map = M.fromList table
+
+table :: [(Word64, Counts)]
+table = [(build64 [x1, x2, x3, x4, x5, x6, x7, x8], countChars [x1, x2, x3, x4, x5, x6, x7, x8]) |
+         x1 <- chars,
+         x2 <- chars,
+         x3 <- chars,
+         x4 <- chars,
+         x5 <- chars,
+         x6 <- chars,
+         x7 <- chars,
+         x8 <- chars]
+    where 
+      chars = ['A', 'C', 'G', 'T']
+
+build64 :: [Char] -> Word64
+build64 xs = snd $ Prelude.foldr (\a (s, b) -> (s + 8, b .|. (shift (fi a) s))) (0, 0) xs
+    where 
+      fi :: Char -> Word64
+      fi = fromIntegral.fromEnum
+      
+
+countChars :: [Char] -> Counts
+countChars xs = V.create $ do
+                  counts <- MV.replicate 4 0
+                  Prelude.mapM_ (count counts) xs
+                  return counts
+    where
+      count v c | c == 'A' = increment v aIndex
+                | c == 'C' = increment v cIndex
+                | c == 'G' = increment v gIndex
+                | c == 'T' = increment v tIndex
+                | otherwise = undefined
+      increment v i = MV.unsafeRead v i >>= MV.unsafeWrite v i . (+ 1)
 
 dna :: B.ByteString -> Counts
 dna nucleotides = V.create $ do
