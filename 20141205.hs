@@ -26,7 +26,7 @@ instance NFData Answer
 
 compatible :: Answer -> (Woman, Woman) -> Bool
 compatible Yes (w1, w2) = w1 == TruthTeller || w2 == TruthTeller
-compatible No (w1, w2) = w1 == Liar && w2 == Liar
+compatible No (w1, w2) = w1 == Liar && w2 == TruthTeller
 
 -- WARNING: gratuitous parallelism ahead (see http://lpaste.net/115749 for non-parallel version)
 answers :: [(Answer, [(Woman, Woman)])]
