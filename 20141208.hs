@@ -1,3 +1,5 @@
+module Main where
+
 {--
 
 Solution to @1HaskellADay http://lpaste.net/115961
@@ -52,6 +54,7 @@ save it off as a file and count nucleotides that way. --}
 
 import Data.Vector.Unboxed as V
 import Data.Vector.Generic.Mutable as MV
+import Data.ByteString.Char8 as B
 
 type As = Int
 type Cs = Int
@@ -65,10 +68,10 @@ cIndex = 1
 gIndex = 2
 tIndex = 3
 
-dna :: String -> Counts
+dna :: B.ByteString -> Counts
 dna nucleotides = V.create $ do
                     counts <- MV.replicate 4 0
-                    Prelude.mapM_ (count counts) nucleotides
+                    Prelude.mapM_ (count counts . B.index nucleotides) [0..(B.length nucleotides - 1)] 
                     return counts
     where
       count v c | c == 'A' = increment v aIndex
@@ -86,6 +89,10 @@ dna nucleotides = V.create $ do
 -- *Main> dna "CGCGCAGGTTGTGAGTTGTCGTAACTGGAGCAGAAGAACTCCCCAGACAAGAAAACCTTGACCATAGAACCACTCAGCTAAATCTCGTAAGTAAAATCACTGGTAGCTTGCCTATTAGTTTGCGTTTACTTTATAGATTACTAGGTCTCTACAATGGATACAGCTTGAAAATGTCTGATTGTACCTTGATCTGGAGGAAGTTTAGCCGGACCGGATGTAGTACAGGCAGCCACATGCAATGACTCCAGATACCACGTTTTGCCCGGTTCGCGTAAGCCAGAAATCGAGCACGCTGTAGGAGGTGGTTACCATTAGTACAGCGACAGGGGTGGTTGGCGCCGCACACCATCTGGAATCTAACCATCGTCGAGACGGTCATCACTGCGCAGGTCCCCAACAGCCTCGCTAGTGGTAGATGCTCGACATTAATAATAATCATCGAATTGTAGGGGACCATGTCAATCATCACGAAGAAAGCATATGTACTACACGCACTCCTCCATGTATCTGCGAGGACTCTCGGGCGAGGCCAACCTTGATTTTCGAATTACGAACCTGAATCCCGCGTTGCTGTTATTAGCTGCAGTTGATTTATATATTTCGGACGGAGTGGGGTATCATGCTCTATTAGACGCCATTGCACCTGAAAATTTGCTTTAGAGGGCAAGTGCTACGACGAGCCAACAGCATCCCTTATATATACATCTGTAACATAGAGCGGCTGTTGACGAACCGCAGGGCACCTCTCAGAGTTCGTATTTCAGCGGGATGTCGATCGGGTCAAGTCTCGAAAACCACCAATGGTGGGCTACGGTGCGCAAAATAGTGAGTCACGACCGTGCCTCCCACTTAGCGTCCCGATTACCAATGTTGGATATTTCAGAAGCGGCCGTTACATTAGGCAGTGAACATATGTAAGTACATATTTGAACACCAAATA"
 -- fromList [257,222,226,235]
 
--- Lots of optimization opportunities here that I don't have time to pursue: use ByteString instead of String, 
+-- Lots of optimization opportunities here that I don't have time to pursue:  
 -- combine 8 Char's into a Word64 and process 8 characters at a time, parallelize it...
 -- But getting the above result takes a second at most in ghci so it's good enough for now
+
+main = do
+  d <- B.readFile "dna.txt"
+  Prelude.putStrLn $ show $ dna d
