@@ -56,6 +56,12 @@ swapChar c | c == 'A' = 'T'
            | c == 'C' = 'G'
            | c == 'G' = 'C'
 
+-- *Main Data.List> revc "AAAACCCGGT"
+-- "ACCGGGTTTT"
+-- That works, but on big files it will be slow and use A LOT of memory (see notes below)
+
+-- Try byte strings with a look-up table to speed up the character swapping (and try to parallelize as well)
+
 revcBS :: B.ByteString -> B.ByteString
 revcBS = B.map swapCharBS . B.reverse
 
@@ -86,12 +92,6 @@ type Method = FilePath -> FilePath -> IO ()
 
 revcString :: Method
 revcString inFile outFile = Prelude.readFile inFile >>= Prelude.writeFile outFile . revc
-
--- *Main Data.List> revc "AAAACCCGGT"
--- "ACCGGGTTTT"
--- That works, but on big files it will be slow and use A LOT of memory (see notes below)
-
--- Try byte strings with a look-up table to speed up the character swapping (and try to parallelize as well)
 
 revcByteString :: Method
 revcByteString inFile outFile = B.readFile inFile >>= B.writeFile outFile . revcBS
