@@ -38,7 +38,6 @@ ACCGGGTTTT
 --}
 
 import Data.Vector.Unboxed as V
-import Data.Vector.Unboxed.Mutable as MV
 import Data.Word
 import Data.ByteString as B
 import Data.ByteString.Lazy as BL
@@ -64,13 +63,9 @@ swapCharBS :: Word8 -> Word8
 swapCharBS = (swapTable !).fromIntegral
 
 swapTable :: V.Vector Word8
-swapTable = V.create $ do
-              v <- MV.replicate 128 x8
-              MV.write v (fromIntegral a8) t8
-              MV.write v (fromIntegral t8) a8
-              MV.write v (fromIntegral c8) g8
-              MV.write v (fromIntegral g8) c8
-              return v
+swapTable = V.replicate 128 x8 V.// Prelude.map fi [(a8, t8), (t8, a8), (c8, g8), (g8, c8)]
+    where 
+      fi (a, b) = (fromIntegral a, b)
 
 to8 :: Char -> Word8
 to8 = fromIntegral.ord
