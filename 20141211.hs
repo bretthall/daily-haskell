@@ -48,8 +48,11 @@ Sample Output
 19 --}
 
 -- The recurrence is F_n = F_{n - 1} + kF_{n - 2} 
+module Main where
 
 import Data.List
+import System.Environment
+import Timing -- http://lpaste.net/116265
 
 --naive version that recalcs things when it doesn't need to
 naiveRecur :: Integer -> Integer -> Integer
@@ -98,7 +101,25 @@ manualRecur n k = recur 2 1 0
 -- 19
 -- => This works too
 
--- Both manualRecur and unfoldRecur run in about the same amount of time, so the only reason 
--- I can see to recommend one over the other is that manualRecur is a little more compact
+main = do
+  [nS, kS] <- getArgs
+  let n = read nS
+      k = read kS
+  unfolded <- timeIt (unfoldRecur n k)
+  manual <- timeIt (manualRecur n k)
+  putStrLn $ "unfolded: " ++ show (snd unfolded) ++ "ns"
+  putStrLn $ "manual:   " ++ show (snd manual) ++ "ns"
 
+-- bhall $./20141211.exe 4000 1
+-- unfolded: 1414181ns
+-- manual:   760669ns
 
+-- bhall $./20141211.exe 40000 1
+-- unfolded: 81040885ns
+-- manual:   31811984ns
+
+-- bhall $./20141211.exe 400000 1
+-- unfolded: 9929353723ns
+-- manual:   2807757984ns
+
+-- => manualRecur is much faster for large n

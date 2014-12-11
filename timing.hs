@@ -15,5 +15,5 @@ timeIt a = do
       where
         calcElapsed a b = secDiff * 10^9 + nsecDiff
             where
-              secDiff = (fromIntegral (sec b - sec a))::Integer
-              nsecDiff = (fromIntegral (nsec b - nsec a))::Integer
+              secDiff = fromIntegral (sec b - sec a)::Integer
+              nsecDiff = fromIntegral (nsec b - nsec a)::Integer
