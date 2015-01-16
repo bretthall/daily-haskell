@@ -91,26 +91,55 @@ results.
 --}
 
 data Rect = Rect {lowerLeft::Point, upperRight::Point} deriving Show
-data Division = Div {square::Rect, entry::Corner, big::Division, small::Division} deriving Show
+data Division = Div {square::Rect, entry::Corner, rect1::Division, rect2::Division} deriving Show
 
 p :: Double
 p = 1.32471795724474602596
 
 harrissDivisions :: Length -> Division
-harrissDivisions l = hDiv initRect (C Lower Left)
+harrissDivisions h = hDiv initRect (C Lower Left)
     where
-      initRect = Rect (P 0 0) (P l*p l)
-      hDiv (Rect (P x1 y1) (P x2 y2)) c@(C Lower Left) = Div sqr c big small
+      initRect = Rect (P 0 0) (P h*p h)
+      hDiv (Rect (P x1 y1) (P x2 y2)) c@(C Lower Left) = Div sqr c r1 r2
           where
-            l = y2 - y1
+            h = y2 - y1
             w = x2 - x1
-            ls = l / (1.0 + p)
-            s = ls * p
-            wb = l / p
-            sqr = Rect (P (x1 + wb) y1) (P (x1 + w) y1 + s) 
-            big = vDiv (Rect (P x1 y1) (P (x1 + wb) y2)) (C Lower Right)
-            small = hDiv (Rect (P (x1 + wb) (y1 + s)) (P x2, y2)) (C Lower Left)
-      hDiv r (C Upper Right) = 
+            h' = h / (1.0 + p)
+            s = h' * p
+            w' = h / p
+            sqr = Rect (P (x1 + w') y1) (P x2 (y1 + s)) 
+            r1 = vDiv (Rect (P x1 y1) (P (x1 + w') y2)) (C Lower Right)
+            r2 = hDiv (Rect (P (x1 + w') (y1 + s)) (P x2 y2)) (C Lower Left)
+      vDiv (Rect (P x1 y1) (P x2 y2)) c@(C Lower Right) = Div sqr c r1 r2
+          where
+            h = y2 - y1
+            w = x2 - x1
+            w' = w / (1.0 + p)
+            s = w' * p
+            h' = w / p
+            sqr = Rect (P (x1 + w') (y1 + h')) (P x2 y2) 
+            r1 = hDiv (Rect (P x1 y1) (P x2 (y2 + h'))) (C Upper Right)
+            r2 = vDiv (Rect (P x1 (y1 + h')) (P (x1 + w') y2)) (C Lower Right)
+      hDiv (Rect (P x1 y1) (P x2 y2)) c@(C Upper Right) = Div sqr c r1 r2
+          where
+            h = y2 - y1
+            w = x2 - x1
+            h' = h / (1.0 + p)
+            s = h' * p
+            w' = h / p
+            sqr = Rect (P x1 (y1 + h') (P (x1 + s) y2) 
+            r1 = vDiv (Rect (P (x1 + s) y1) (P x2 y2)) (C Upper Left)
+            r2 = hDiv (Rect (P x1 y1) (P (x1 + s) (y1 + h'))) (C Upper Right)
+      vDiv (Rect (P x1 y1) (P x2 y2)) c@(C Upper Left) = Div sqr c r1 r2
+          where
+            h = y2 - y1
+            w = x2 - x1
+            w' = w / (1.0 + p)
+            s = w' * p
+            h' = w / p
+            sqr = Rect (P x1 y1) (P (x1 + s) (y1 + s)) 
+            r1 = hDiv (Rect (P x1 (y1 + s)) (P x2 y2)) (C Lower Left)
+            r2 = vDiv (Rect (P (x1 + s) y1) (P x2 (y1 + s))) (C Upper Left)
 
 harrissSpiral :: Dimensions -> [Point]
 harrissSpiral rectangle = undefined
