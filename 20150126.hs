@@ -1,7 +1,4 @@
-{-# LANGUAGE  TemplateHaskell, Rank2Types#-}
-
 import Data.Array.IArray
-import Control.Lens
 
 {--
 Solution to @1HaskellADay http://lpaste.net/119228
@@ -35,8 +32,7 @@ countingTriangles :: Graph -> Int
 countingTriangles triangles = undefined
 
 type Graph = Array Int Vertex
-data Vertex = V {_idx::Int, _leftChild::Maybe Int, _rightChild::Maybe Int, _leftSibling::Maybe Int} deriving Show
-$(makeLenses ''Vertex)
+data Vertex = V {idx::Int, leftChild::Maybe Int, rightChild::Maybe Int, leftSibling::Maybe Int} deriving Show
 
 verts :: Array Int Vertex
 verts = listArray (1,15) [
@@ -57,11 +53,11 @@ verts = listArray (1,15) [
  V 15 Nothing Nothing Nothing]
 
 type EdgeLength = Int
-followEdge :: EdgeLength -> Vertex -> Lens' Vertex (Maybe Int) -> Maybe Int
-followEdge l v b | l > 0 = case v^.b of
+followEdge :: EdgeLength -> Vertex -> (Vertex -> Maybe Int) -> Maybe Int
+followEdge l v b | l > 0 = case b v of
                              Just i -> followEdge (l - 1) (verts ! i) b
                              Nothing -> Nothing
-                 | l == 0 = Just $ v^.idx
+                 | l == 0 = Just $ idx v
 
 countTris :: Vertex -> Int
 countTris v = sum $ map (\l -> tryLeft l + trySibling l) possibleEdgeLengths
