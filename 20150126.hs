@@ -40,21 +40,21 @@ $(makeLenses ''Vertex)
 
 verts :: Array Int Vertex
 verts = listArray (1,15) [
- (V 1 (Just 2) (Just 3) Nothing),
- (V 2 (Just 4) (Just 5) (Just 3)),
- (V 3 (Just 5) (Just 6) Nothing),
- (V 4 (Just 7) (Just 8) (Just 5)),
- (V 5 Nothing Nothing (Just 6)),
- (V 6 (Just 9) (Just 10) Nothing),
- (V 7 (Just 11) (Just 12) (Just 8)),
- (V 8 (Just 12) (Just 13) Nothing),
- (V 9 (Just 13) (Just 14) (Just 10)),
- (V 10 (Just 14) (Just 15) Nothing),
- (V 11 Nothing Nothing (Just 12)),
- (V 12 Nothing Nothing (Just 13)),
- (V 13 Nothing Nothing (Just 14)),
- (V 14 Nothing Nothing (Just 15)),
- (V 15 Nothing Nothing Nothing)]
+ V 1 (Just 2) (Just 3) Nothing,
+ V 2 (Just 4) (Just 5) (Just 3),
+ V 3 (Just 5) (Just 6) Nothing,
+ V 4 (Just 7) (Just 8) (Just 5),
+ V 5 Nothing Nothing (Just 6),
+ V 6 (Just 9) (Just 10) Nothing,
+ V 7 (Just 11) (Just 12) (Just 8),
+ V 8 (Just 12) (Just 13) Nothing,
+ V 9 (Just 13) (Just 14) (Just 10),
+ V 10 (Just 14) (Just 15) Nothing,
+ V 11 Nothing Nothing (Just 12),
+ V 12 Nothing Nothing (Just 13),
+ V 13 Nothing Nothing (Just 14),
+ V 14 Nothing Nothing (Just 15),
+ V 15 Nothing Nothing Nothing]
 
 type EdgeLength = Int
 followEdge :: EdgeLength -> Vertex -> Lens' Vertex (Maybe Int) -> Maybe Int
@@ -64,7 +64,7 @@ followEdge l v b | l > 0 = case v^.b of
                  | l == 0 = Just $ v^.idx
 
 countTris :: Vertex -> Int
-countTris v = foldr (+) 0 $ map (\l -> tryLeft l + trySibling l) possibleEdgeLengths
+countTris v = sum $ map (\l -> tryLeft l + trySibling l) possibleEdgeLengths
     where
       possibleEdgeLengths = [1,2,4]
       tryLeft :: EdgeLength -> Int
@@ -90,7 +90,7 @@ countTris v = foldr (+) 0 $ map (\l -> tryLeft l + trySibling l) possibleEdgeLen
         then Just pr
         else Nothing
 
--- *Main> foldr (+) 0 $ map (\i -> countTris $ verts ! i) [1..15]
+-- *Main> sum $ map (\i -> countTris $ verts ! i) [1..15]
 -- 17
 
 {-- Hint: I just used the cellular automata library to generate the triangles
