@@ -4,6 +4,7 @@ import Data.Array.IArray
 import Control.Lens
 
 {--
+Solution to @1HaskellADay http://lpaste.net/119228
 
 Okay, we'll start off simply this week with Mensa Genuis Quiz-a-Day
 Book problem from July 22nd:
