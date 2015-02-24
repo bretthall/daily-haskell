@@ -31,14 +31,26 @@ possible s = unfoldr next 0
 --Seems like there should be a way to use MonadPlus to let the caller decide whether one result (e.g. m = Maybe) or all results
 --(e.g. m = []) are wanted. But I don't immediately see how to convert from [Cube] -> m Cube in a general way and don't have time
 --to figure it out at the moment, so do the gross hack of jsut returning the first valid value.
+-- cubeDatSquare :: MonadPlus m => Square -> m Cube
+-- cubeDatSquare sqr = if not (null result) then return (head result) else mzero 
+--     where
+--       result = filter isCube $ possible sqr
+
+--Actually, this allows the caller to control how many results are returned
 cubeDatSquare :: MonadPlus m => Square -> m Cube
-cubeDatSquare sqr = if not (null result) then return (head result) else mzero 
+cubeDatSquare sqr = msum $ map isGood $ possible sqr
     where
-      result = filter isCube $ possible sqr
+      isGood i = if isCube i then return i else mzero
+  
+-- *Main Data.Maybe> head $ filter (\(_, x) -> isJust x) $ map (\x -> (x^2, (cubeDatSquare $ x^2))) [1..]
+-- (39204,Just 39304)
+
+-- *Main Data.Maybe> (cubeDatSquare 39204)::[Cube]
+-- [39304]
+-- *Main Data.Maybe> (cubeDatSquare 39204)::Maybe Cube
+-- Just 39304
 
 -- so a square gozin and a cube comezout ... if the cube is the square with
 -- just one of its digits incremented by 1; otherwise you get the big, fat
 -- mzero. Find a 'sqr' that returns a cube that's (obviously) not mzero
 
--- *Main Data.Maybe> head $ filter (\(_, x) -> isJust x) $ map (\x -> (x^2, (cubeDatSquare $ x^2))) [1..]
--- (39204,Just 39304)
