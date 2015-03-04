@@ -20,6 +20,7 @@ import Data.Numbers.Primes
 --Let's use vectors for kicks
 import qualified Data.Vector.Unboxed as V
 import qualified Data.Vector.Unboxed.Mutable as MV
+import qualified Data.Vector.Generic as GV
 import Control.Monad
 
 type Base = Int
@@ -51,11 +52,11 @@ truncations :: Int -> [Int]
 truncations n = leftTruncations ds ++ rightTruncations ds
     where
       ds = digitsVec 10 n
-      leftTruncations ts | numTs > 1 = let ts' = V.slice 1 (numTs - 1) ts in unDigitsVec 10 ts' : leftTruncations ts'
+      leftTruncations ts | numTs > 1 = let ts' = V.unsafeTail ts in unDigitsVec 10 ts' : leftTruncations ts'
                          | otherwise = []
           where
             numTs = V.length ts
-      rightTruncations ts | numTs > 1 = let ts' = V.slice 0 (numTs - 1) ts in unDigitsVec 10 ts' : rightTruncations ts'
+      rightTruncations ts | numTs > 1 = let ts' = V.unsafeInit ts in unDigitsVec 10 ts' : rightTruncations ts'
                           | otherwise = []
           where
             numTs = V.length ts
