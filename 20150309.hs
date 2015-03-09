@@ -27,29 +27,41 @@ logic puzzles, meaning that information is pushed/forced to a solution from
 potentionally otherwise paradoxical information. This is a warming up
 metapuzzle to get the coercive logic muscles toned. Have at it! On y va! --}
 
-import Data.List
-
 isFactorOf :: Int -> Int -> Bool
 isFactorOf n m = m `mod` n == 0
 
 factors :: Int -> [Int]
 factors n = [i | i <- [1..n], i `isFactorOf` n]
 
-possible :: [(Int, Int, Int)]
-possible =  [(s, d1, d2) | 
-             -- the kids' ages multiply to 36 => they're all factors of 36
-             s <- factors36, 
-             -- The daughters' ages are all more then 1 less than the son's age
-             d1 <- filter (`isFactorOf` (36 `div` s)) $ takeWhile (< (s - 1)) factors36,
-             d2 <- [36 `div` s `div` d1],
-             -- remove redundant solutions
-             d2 <= d1
-            ]
-    where
-      factors36 = factors 36
+--ages' product is 36
+possible = [(s, d1, d2) |
+             s <- factors 36,
+             d1 <- factors (36 `div` s),
+             let d2 = 36 `div` (s*d1)]
 
---minimize Iskander's age to get a unique solution since Iskander is "young"
-kamarsChildrensAges :: (Int, Int, Int)
-kamarsChildrensAges = minimumBy minIskanderAge possible
+--ages sum to Iskandar's age and that isn't enough information (only keep Iskander ages that have more than one solution)
+agesSum :: [(Int, [(Int, Int, Int)])]
+agesSum = filter ((>1).length.snd) $ map sumOK [1..maxAge]
     where
-      minIskanderAge (s1, d11, d21) (s2, d12, d22) = compare (s1 + d11 + d21) (s2 + d12 + d22) 
+      maxAge = maximum (map (\(x,y,z) -> x + y + z) possible)
+      sumOK age = (age, [(x,y,z) | (x,y,z) <- possible, x + y + z == age])
+
+--the son is more than 1 year older than the daughters
+agesOK :: (Int, Int, Int) -> Bool
+agesOK (s, d1, d2) = (s - 1) > d1 &&  (s - 1) > d2
+
+okAges :: [(Int, [(Int, Int, Int)])]
+okAges = filter (not.null.snd) $ map (\(age, as) -> (age, filter agesOK as)) agesSum
+
+-- Iskander is "young"
+youngEnough :: [(Int, [(Int, Int, Int)])]
+youngEnough = filter (\(a, _) -> a < 18) okAges
+
+--Now we're supposed to have enough information so restrict to Iskander ages that only have one solution
+uniqueSolution :: [(Int, [(Int, Int, Int)])]
+uniqueSolution  = filter ((==1).length.snd) youngEnough
+
+kamarsChildrensAges = head $ snd $ head uniqueSolution
+
+-- *Main> kamarsChildrensAges
+-- (9,2,2)
