@@ -1,6 +1,8 @@
 *.hi
 *.exe
 *.o
-#*
+#*#
 temp.hs
 *.eventlog
+*.txt
+*.dat
