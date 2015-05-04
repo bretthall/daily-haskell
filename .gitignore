@@ -6,3 +6,5 @@ temp.hs
 *.eventlog
 *.txt
 *.dat
+/20141208-gen
+/20141210
