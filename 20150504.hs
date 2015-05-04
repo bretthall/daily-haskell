@@ -1,3 +1,5 @@
+-- Solution for @1HaskellADay http://lpaste.net/179758090873208832
+
 module Data.Trie where
 
 import Control.Monad
