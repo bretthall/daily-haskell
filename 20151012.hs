@@ -53,8 +53,7 @@ fromLists rs = listArray ((1, 1), (numRows, numCols)) $ cutAndConcat rs
     where
       numRows = length rs
       numCols = minimum $ map length rs
-      cutAndConcat (r:rs) = take numCols r ++ cutAndConcat rs
-      cutAndConcat [] = []
+      cutAndConcat = foldr ((++) . take numCols) []
                         
 -- redefine pprint so it works with this new type pretty-printing as before
 
@@ -62,7 +61,7 @@ pprint :: Show a => Matrix a -> IO ()
 pprint a = mapM_ (printRow a) [1..numRows]
     where
       (_, (numRows, numCols)) = bounds a
-      printRow a r = print $ concat $ intersperse " " $ map (show.(a!)) [(r, c) | c <- [1..numCols]] 
+      printRow a r = print $ unwords $ map (show.(a!)) [(r, c) | c <- [1..numCols]] 
 
 -- pprint the following matrix:
 
