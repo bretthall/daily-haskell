@@ -82,3 +82,4 @@ threeDownLowOnThe4 = flip (!)
 
 -- *Data.Matrix> threeDownLowOnThe4 (3,4) ourMatrix
 -- 14
+
