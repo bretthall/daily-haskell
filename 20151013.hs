@@ -1,6 +1,7 @@
+-- Solution to @1HaskellADay http://lpaste.net/7639242339784851456
+
 import Data.Array
-import Data.Array.ST as DAST
-import qualified Data.List as DL
+import Data.Array.ST
 
 type Matrix a = Array (Int, Int) a
 
@@ -123,8 +124,8 @@ cols m = map extractCol [1..numCols]
 -- ==> transpose swaps rows and cols
 
 row, col :: Int -> Matrix a -> [a]
-row r m = (rows m) !! (r - 1)
-col c m = (cols m) !! (c - 1)
+row r m = rows m !! (r - 1)
+col c m = cols m !! (c - 1)
 
 -- what is row 2 for tehMatrix? ... for transpose tehMatrix?
 -- *Main> row 2 tehMatrix
